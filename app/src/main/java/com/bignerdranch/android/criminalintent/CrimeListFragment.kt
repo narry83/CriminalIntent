@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -15,6 +16,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 private const val TAG = "CrimeListFragment"
+
+private const val REGULAR_CRIME_TYPE =0
+private const val SERIOUS_CRIME_TYPE =1
 
 class CrimeListFragment : Fragment() {
 
@@ -51,8 +55,14 @@ class CrimeListFragment : Fragment() {
         crimeRecylerView.adapter = adapter
     }
 
+    private abstract inner class AbstractCrimeHolder(view: View):
+        RecyclerView.ViewHolder(view){
+
+            abstract fun bind(crime: Crime)
+    }
+
     private inner class CrimeHolder(view: View)
-        :RecyclerView.ViewHolder(view), View.OnClickListener {
+        :AbstractCrimeHolder(view), View.OnClickListener {
 
         private lateinit var crime: Crime
 
@@ -64,7 +74,7 @@ class CrimeListFragment : Fragment() {
             itemView.setOnClickListener(this)
         }
 
-        fun bind(crime: Crime) {
+        override fun bind(crime: Crime) {
             this.crime = crime
             titleTextView.text = this.crime.title
             dateTextView.text = this.crime.date.toString()
@@ -81,18 +91,47 @@ class CrimeListFragment : Fragment() {
         }
     }
 
-    private inner class CrimeAdapter(var crimes: List <Crime>)
-        :RecyclerView.Adapter<CrimeHolder>() {
+    private inner class SeriousCrimeHolder(view: View)
+        :AbstractCrimeHolder(view){
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CrimeHolder {
-            val view = layoutInflater.inflate(R.layout.list_item_crime, parent, false)
-            return CrimeHolder(view)
+        private lateinit var crime: Crime
+
+        private val contactPoliceButton: Button = itemView.findViewById(R.id.contact_police_button)
+
+        init {
+            contactPoliceButton.setOnClickListener {
+                val callingMessage= getString(R.string.contact_police_message, crime.title)
+                Toast.makeText(context,callingMessage, Toast.LENGTH_SHORT)
+                .show() }
         }
 
-        override fun onBindViewHolder(holder: CrimeHolder, position: Int) {
+        override fun bind(crime: Crime){
+            this.crime = crime
+        }
+        }
+
+
+    private inner class CrimeAdapter(var crimes: List <Crime>)
+        :RecyclerView.Adapter<AbstractCrimeHolder>() {
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AbstractCrimeHolder {
+
+            if (viewType == SERIOUS_CRIME_TYPE) {
+                val view = layoutInflater.inflate(R.layout.list_item_serious_crime, parent, false)
+                return SeriousCrimeHolder(view)
+            } else {
+                val view = layoutInflater.inflate(R.layout.list_item_crime, parent, false)
+                return CrimeHolder(view)
+            }
+        }
+
+        override fun onBindViewHolder(holder: AbstractCrimeHolder, position: Int) {
             val crime = crimes[position]
             holder.bind(crime)
         }
+
+        override fun getItemViewType(position: Int)
+            =if (crimes[position].requiresPolice){SERIOUS_CRIME_TYPE} else {REGULAR_CRIME_TYPE}
 
         override fun getItemCount() = crimes.size
 
