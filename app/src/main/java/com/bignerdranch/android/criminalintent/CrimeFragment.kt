@@ -38,35 +38,44 @@ class CrimeFragment : Fragment() {
             text = crime.date.toString()
             isEnabled = false
         }
+
         return view
     }
 
     override fun onStart() {
         super.onStart()
 
-        val titleWatcher = object : TextWatcher{
+        val titleWatcher = object : TextWatcher {
 
-            override fun beforeTextChanged(sequence: CharSequence?, start: Int, count: Int, after: Int)
-               {
-                    //Leave Blank
-                }
+            override fun beforeTextChanged(
+                sequence: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+                // This space intentionally left blank
+            }
 
-            override fun onTextChanged(sequence: CharSequence?, start: Int, before: Int, count: Int) {
+            override fun onTextChanged(
+                sequence: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
                 crime.title = sequence.toString()
             }
 
             override fun afterTextChanged(sequence: Editable?) {
-                //Leave Blank
+                // This one too
             }
         }
 
         titleField.addTextChangedListener(titleWatcher)
 
         solvedCheckBox.apply {
-            setOnCheckedChangeListener{_,isChecked ->
+            setOnCheckedChangeListener { _, isChecked ->
                 crime.isSolved = isChecked
             }
         }
-
     }
 }
