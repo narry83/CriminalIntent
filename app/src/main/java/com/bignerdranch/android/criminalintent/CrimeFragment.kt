@@ -28,7 +28,7 @@ private const val DIALOG_DATE = "DialogDate"
 private const val REQUEST_DATE = 0
 private const val REQUEST_CONTACT = 1
 private const val REQUEST_PHOTO = 2
-private const val DATE_FORMAT = "EEE, MMM, dd"
+private const val DATE_FORMATS="EEE, MMM, dd"
 
 class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
 
@@ -243,10 +243,8 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
                 // Specify which fields you want your query to return values for
                 val queryFields = arrayOf(ContactsContract.Contacts.DISPLAY_NAME)
                 // Perform your query - the contactUri is like a "where" clause here
-                val cursor = contactUri?.let {
-                    requireActivity().contentResolver
-                        .query(it, queryFields, null, null, null)
-                }
+                val cursor = requireActivity().contentResolver
+                    .query(contactUri!!, queryFields, null, null, null)
                 cursor?.use {
                     // Verify cursor contains at least one result
                     if (it.count == 0) {
@@ -279,7 +277,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
             getString(R.string.crime_report_unsolved)
         }
 
-        val dateString = DateFormat.format(DATE_FORMAT, crime.date).toString()
+        val dateString = DateFormat.format(DATE_FORMATS, crime.date).toString()
         var suspect =if(crime.suspect.isBlank()){
             getString(R.string.crime_report_no_suspect)
         }else{
