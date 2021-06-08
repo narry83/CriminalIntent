@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.MediaStore
-import android.provider.Settings.System.DATE_FORMAT
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.format.DateFormat
@@ -28,7 +27,7 @@ private const val DIALOG_DATE = "DialogDate"
 private const val REQUEST_DATE = 0
 private const val REQUEST_CONTACT = 1
 private const val REQUEST_PHOTO = 2
-private const val DATE_FORMATS="EEE, MMM, dd"
+private const val DATE_FORMAT="EEE, MMM, dd"
 
 class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
 
@@ -277,7 +276,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
             getString(R.string.crime_report_unsolved)
         }
 
-        val dateString = DateFormat.format(DATE_FORMATS, crime.date).toString()
+        val dateString = DateFormat.format(DATE_FORMAT, crime.date).toString()
         var suspect =if(crime.suspect.isBlank()){
             getString(R.string.crime_report_no_suspect)
         }else{
